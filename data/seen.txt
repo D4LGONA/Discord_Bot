@@ -1187,6 +1187,7 @@ jobkorea|49760288|클라이언트
 jobkorea|49762488|클라이언트
 jobkorea|49762661|서버
 jobkorea|49767734|클라이언트
+jobkorea|49767859|모델링
 jobkorea|49769820|모델링
 jobkorea|49774684|클라이언트
 jobkorea|49777397|클라이언트
@@ -1222,16 +1223,22 @@ jobkorea|49830860|클라이언트
 jobkorea|49831660|모델링
 jobkorea|49831775|클라이언트
 jobkorea|49833297|클라이언트
+jobkorea|49837820|클라이언트
 jobkorea|49839188|모델링
+jobkorea|49839368|클라이언트
+jobkorea|49840862|기획
 jobkorea|49840902|서버
+jobkorea|49842552|서버
 jobkorea|49844452|모델링
 jobkorea|49844454|모델링
+jobkorea|49844493|모델링
 jobkorea|49844888|모델링
 saramin|53090741|모델링
 saramin|53090743|모델링
 saramin|53090747|클라이언트
 saramin|53157731|클라이언트
 saramin|53603123|클라이언트
+saramin|53624886|서버
 saramin|53815688|모델링
 saramin|53815943|모델링
 saramin|54255491|모델링
@@ -1248,6 +1255,7 @@ saramin|54404342|클라이언트
 saramin|54417769|모델링
 saramin|54426386|클라이언트
 saramin|54460343|모델링
+saramin|54478046|클라이언트
 saramin|54487004|클라이언트
 saramin|54487083|클라이언트
 saramin|54487780|모델링
@@ -1303,6 +1311,7 @@ saramin|54738942|기획
 saramin|54741577|모델링
 saramin|54741755|서버
 saramin|54741906|기획
+saramin|54744670|클라이언트
 saramin|54748538|서버
 saramin|54750734|클라이언트
 saramin|54750758|기획
