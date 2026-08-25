@@ -240,6 +240,46 @@ python run_once.py --dry-run   # 발송 안 하고 콘솔에만 출력
 python run_once.py             # 실제 발송
 ```
 
+## 전체 공고 열람 페이지
+
+디스코드 채널에는 **그날 새로 뜬 공고만** 올라갑니다. 지금 열려 있는 공고 전체를 보려면
+GitHub Pages 로 만들어지는 목록 페이지를 씁니다. 매일 발송과 함께 자동으로 갱신됩니다.
+
+- 직군 탭 · 회사/공고명/지역 검색 · 경력 낮은순 정렬 · 오늘 신규만 보기
+- 외부 리소스를 안 쓰는 단일 HTML 이라 빠르고, 다크모드도 따라갑니다
+- 같은 공고가 여러 사이트에 올라와 있으면 한 건으로 합칩니다
+
+### 켜는 법
+
+GitHub Pages 는 **공개 저장소에서만 무료**입니다. 비공개로 두려면 GitHub Pro 가 필요합니다.
+
+```bash
+gh repo edit --visibility public --accept-visibility-change-consequences
+```
+
+토큰은 저장소가 아니라 Actions Secrets 에 있고 `.env` 는 `.gitignore` 에 있어서
+공개해도 새어 나가지 않습니다. 채널 ID 는 서버 멤버가 아니면 아무것도 못 합니다.
+
+그다음 Pages 를 `main` 브랜치의 `/docs` 폴더로 켭니다.
+
+```bash
+gh api -X POST repos/:owner/:repo/pages -f "source[branch]=main" -f "source[path]=/docs"
+```
+
+주소는 `https://<계정>.github.io/<저장소>/` 입니다. `config.yaml` 의 `site_url` 에 넣어 두면
+디스코드 메시지마다 "전체 공고 보기" 링크가 붙습니다.
+
+### 로컬에서 만들어 보기
+
+```bash
+python run_once.py --dry-run
+```
+```bash
+python build_site.py
+```
+
+`docs/index.html` 이 생깁니다. 브라우저로 바로 열어 보면 됩니다.
+
 ## 문제가 생기면
 
 - **봇이 `시간대 'Asia/Seoul' 를 찾을 수 없습니다` 로 종료** → `pip install tzdata`
@@ -257,6 +297,7 @@ python run_once.py             # 실제 발송
 setup.py                  최초 설정 도우미 (.env 생성 + 접속 확인)
 bot.py                    상시 실행 봇 · 스케줄러 · 슬래시 명령
 run_once.py               한 번 실행하고 끝 (GitHub Actions 용)
+build_site.py             전체 공고 열람 페이지(docs/index.html) 생성
 .github/workflows/daily.yml   매일 오전 6시 자동 실행
 dryrun.py                 디스코드 없이 수집 파이프라인 점검
 config.yaml               설정

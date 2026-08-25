@@ -22,7 +22,7 @@ from dotenv import load_dotenv
 
 from jobbot.collector import collect
 from jobbot.digest import plan_messages
-from jobbot.store import SeenFile
+from jobbot.store import SeenFile, snapshot
 
 logging.basicConfig(
     level=logging.INFO,
@@ -84,6 +84,9 @@ async def main() -> int:
 
     fresh = store.filter_new(postings)
     log.info("신규 %d건 / 전체 %d건", len(fresh), len(postings))
+
+    # 웹 목록용 스냅샷. 디스코드엔 신규만 가지만 페이지에는 전체가 필요하다.
+    snapshot(postings, {p.key for p in fresh})
 
     per_cat = int(cfg.get("max_per_section", 25))
     if first_run:

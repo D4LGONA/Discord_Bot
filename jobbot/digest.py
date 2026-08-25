@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 from datetime import datetime
+from urllib.parse import quote
 
 import discord
 
@@ -174,6 +175,15 @@ def plan_messages(
             continue
         buckets.setdefault(str(target), []).append(category)
 
+    # 채널에는 신규만 올라가므로, 전체를 보려면 웹 목록으로 보내 준다.
+    site = (cfg.get("site_url") or "").strip()
+
+    def with_link(text: str, category: str | None = None) -> str:
+        if not site:
+            return text
+        url = f"{site}?cat={quote(category)}" if category else site
+        return f"{text}\n-# [전체 공고 보기]({url})"
+
     for target, cats in buckets.items():
         items = [p for p in postings if p.category in cats]
         if not items:
@@ -182,16 +192,18 @@ def plan_messages(
         if not embeds:
             continue
         if len(cats) == 1:
-            content = f"**{cats[0]} 신규 {len(items)}건**{seed_note}"
+            content = with_link(f"**{cats[0]} 신규 {len(items)}건**{seed_note}", cats[0])
         else:
-            content = (
+            content = with_link(
                 f"**오늘의 신규 채용공고 {len(items)}건**\n"
                 f"{summary_line(items)}{seed_note}"
             )
         plans.append((target, content, embeds))
 
     if not plans and default_channel is not None:
-        plans.append((str(default_channel), "오늘 새로 올라온 공고가 없습니다.", []))
+        plans.append(
+            (str(default_channel), with_link("오늘 새로 올라온 공고가 없습니다."), [])
+        )
     return plans
 
 

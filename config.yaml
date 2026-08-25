@@ -37,3 +37,7 @@ request_delay: 0.7
 
 # 한 번에 채널에 올릴 공고 수 상한 (직군당)
 max_per_section: 25
+
+# 전체 공고 열람 페이지. 디스코드 메시지 끝에 링크로 붙는다.
+# GitHub Pages 를 안 쓸 거면 비워 두면 링크가 안 붙는다.
+site_url: https://d4lgona.github.io/Discord_Bot/

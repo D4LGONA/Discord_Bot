@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+import re
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
@@ -153,3 +155,71 @@ class SeenFile:
         self.path.write_text(
             "\n".join(sorted(self.keys)) + "\n", encoding="utf-8"
         )
+
+
+def _norm(text: str) -> str:
+    """중복 판정용. 공백·괄호·기호를 걷어내고 비교한다."""
+    return re.sub(r"[\s\[\]()（）·・,./-]+", "", (text or "").lower())
+
+
+def _deadline(raw: str) -> str:
+    """사이트마다 '~ 08/31(월)' / '10/19' / '채용시' 로 제각각이라 물결표를 정리한다."""
+    t = (raw or "").strip().lstrip("~").strip()
+    return t
+
+
+def snapshot(
+    postings: list[Posting],
+    fresh_keys: set[tuple[str, str, str]] | None = None,
+    path: str | Path = "data/postings.json",
+) -> Path:
+    """현재 열려 있는 공고 전체를 JSON 으로 떨궈 둔다.
+
+    디스코드에는 신규만 보내지만 웹 목록에는 전체가 필요해서 따로 남긴다.
+    build_site.py 가 이 파일을 읽어 페이지를 만든다.
+    """
+    fresh_keys = fresh_keys or set()
+    out = Path(path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+
+    # 같은 공고가 사이트마다 올라와 있으면 목록에 두 번 뜬다.
+    # 회사+제목이 같으면 한 건으로 보고, 분류가 정확한 소스를 남긴다.
+    priority = {"gamejob": 0, "wanted": 1, "saramin": 2, "jobkorea": 3}
+    best: dict[tuple[str, str, str], Posting] = {}
+    for p in postings:
+        k = (p.category, _norm(p.company), _norm(p.title))
+        cur = best.get(k)
+        if cur is None or priority.get(p.source, 9) < priority.get(cur.source, 9):
+            # 어느 소스에서든 새로 뜬 공고면 NEW 표시는 살려 둔다
+            if cur is not None and cur.key in fresh_keys:
+                fresh_keys = fresh_keys | {p.key}
+            best[k] = p
+
+    rows = [
+        {
+            "source": p.source,
+            "id": p.external_id,
+            "category": p.category,
+            "title": p.title,
+            "company": p.company,
+            "url": p.url,
+            "career": p.career_raw,
+            "years": p.career_min,
+            "location": p.location,
+            "employment": p.employment,
+            "deadline": _deadline(p.deadline),
+            "new": p.key in fresh_keys,
+        }
+        for p in best.values()
+    ]
+    rows.sort(key=lambda r: (r["category"], r["years"] if r["years"] is not None else 99,
+                             r["company"], r["title"]))
+    out.write_text(
+        json.dumps(
+            {"updated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+             "count": len(rows), "postings": rows},
+            ensure_ascii=False, separators=(",", ":"),
+        ),
+        encoding="utf-8",
+    )
+    return out
