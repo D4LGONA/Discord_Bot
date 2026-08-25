@@ -15,7 +15,7 @@ EMBED_TITLE_LIMIT = 250
 
 CATEGORY_STYLE = {
     "기획": ("📝", 0x5865F2),
-    "모델링": ("🎨", 0xEB459E),
+    "아트": ("🎨", 0xEB459E),
     "서버": ("🗄️", 0x57F287),
     "클라이언트": ("🖥️", 0xFEE75C),
 }
@@ -143,8 +143,60 @@ def _split_block(block: str, limit: int) -> list[str]:
     return out
 
 
+def plan_messages(
+    postings: list[Posting],
+    cfg: dict,
+    default_channel: str | int | None,
+    max_per_section: int = 25,
+    first_run: bool = False,
+) -> list[tuple[str, str | None, list[discord.Embed]]]:
+    """어느 채널에 무엇을 보낼지 정한다. (채널ID, 본문, 임베드) 목록을 돌려준다.
+
+    직군마다 채널이 지정돼 있으면 각자 채널로 흩어 보내고, 지정 안 된 직군은
+    기본 채널로 모아 보낸다. 채널을 하나도 지정하지 않았으면 예전처럼
+    기본 채널 한 곳에 전부 보낸다.
+    """
+    mapping = {k: v for k, v in (cfg.get("channels") or {}).items() if v}
+    plans: list[tuple[str, str | None, list[discord.Embed]]] = []
+
+    seed_note = ""
+    if first_run:
+        seed_note = (
+            f"\n기존 공고를 기준선으로 저장했습니다. 내일부터 **새로 올라온 공고만** 옵니다. "
+            f"아래는 맛보기입니다."
+        )
+
+    # 같은 채널로 갈 직군끼리 묶는다 (기본 채널로 떨어지는 직군이 여럿일 수 있다)
+    buckets: dict[str, list[str]] = {}
+    for category in CATEGORIES:
+        target = mapping.get(category) or default_channel
+        if target is None:
+            continue
+        buckets.setdefault(str(target), []).append(category)
+
+    for target, cats in buckets.items():
+        items = [p for p in postings if p.category in cats]
+        if not items:
+            continue
+        embeds = build_embeds(items, max_per_section=max_per_section)
+        if not embeds:
+            continue
+        if len(cats) == 1:
+            content = f"**{cats[0]} 신규 {len(items)}건**{seed_note}"
+        else:
+            content = (
+                f"**오늘의 신규 채용공고 {len(items)}건**\n"
+                f"{summary_line(items)}{seed_note}"
+            )
+        plans.append((target, content, embeds))
+
+    if not plans and default_channel is not None:
+        plans.append((str(default_channel), "오늘 새로 올라온 공고가 없습니다.", []))
+    return plans
+
+
 def summary_line(postings: list[Posting]) -> str:
-    """'기획 3 · 모델링 1 · 서버 0 · 클라이언트 5' 형태의 한 줄 요약."""
+    """'기획 3 · 클라이언트 5 · 서버 0 · 아트 1' 형태의 한 줄 요약."""
     parts = []
     for c in CATEGORIES:
         n = sum(1 for p in postings if p.category == c)

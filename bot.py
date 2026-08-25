@@ -1,7 +1,7 @@
 """게임 개발자 채용공고 디스코드 봇.
 
 매일 정해진 시각(기본 오전 6시 KST)에 게임잡·원티드·사람인·잡코리아에서
-기획 / 모델링 / 서버 / 클라이언트 공고를 수집해, 각 직군을
+기획 / 클라이언트 / 서버 / 아트 공고를 수집해, 각 직군을
 '인턴·신입 지원가능(3년 이하)' 과 '경력' 으로 나눠 채널에 올린다.
 
 이미 올린 공고는 SQLite 에 기억해 두고 매일 새로 올라온 것만 발송한다.
@@ -23,7 +23,7 @@ from discord.ext import tasks
 from dotenv import load_dotenv
 
 from jobbot.collector import collect
-from jobbot.digest import build_embeds, summary_line
+from jobbot.digest import build_embeds, plan_messages, summary_line
 from jobbot.models import CATEGORIES, ENTRY, SENIOR, Posting
 from jobbot.store import Store
 
@@ -89,27 +89,43 @@ class JobBot(discord.Client):
             log.info("신규 %d건 (전체 %d건 조회)", len(fresh), len(postings))
             return fresh, first_run
 
-    async def send_digest(self, channel: discord.abc.Messageable, fresh) -> None:
-        if not fresh:
-            await channel.send("오늘 새로 올라온 공고가 없습니다.")
-            return
-        header = f"**오늘의 신규 채용공고 {len(fresh)}건**\n{summary_line(fresh)}"
-        embeds = build_embeds(fresh, max_per_section=int(CFG.get("max_per_section", 25)))
-        # 헤더는 임베드가 아니라 메시지 본문으로 붙인다.
-        # 임베드 description 에 끼워 넣으면 4096자 한도를 넘길 수 있다.
-        for i in range(0, len(embeds), 10):
-            # 디스코드는 한 메시지에 임베드 10개까지
-            await channel.send(
-                content=header if i == 0 else None, embeds=embeds[i : i + 10]
+    async def send_digest(self, fresh, *, only_channel=None) -> None:
+        """직군별 채널로 흩어 보낸다.
+
+        only_channel 을 주면 (슬래시 명령처럼) 그 채널 한 곳에만 보낸다.
+        """
+        if only_channel is not None:
+            if not fresh:
+                await only_channel.send("오늘 새로 올라온 공고가 없습니다.")
+                return
+            header = f"**신규 채용공고 {len(fresh)}건**\n{summary_line(fresh)}"
+            embeds = build_embeds(
+                fresh, max_per_section=int(CFG.get("max_per_section", 25))
             )
+            # 헤더는 임베드가 아니라 메시지 본문으로 붙인다.
+            # 임베드 description 에 끼워 넣으면 4096자 한도를 넘길 수 있다.
+            for i in range(0, len(embeds), 10):
+                # 디스코드는 한 메시지에 임베드 10개까지
+                await only_channel.send(
+                    content=header if i == 0 else None, embeds=embeds[i : i + 10]
+                )
+            return
+
+        for target, content, embeds in plan_messages(
+            fresh, CFG, CHANNEL_ID, int(CFG.get("max_per_section", 25))
+        ):
+            channel = self.get_channel(int(target))
+            if channel is None:
+                log.error("채널 %s 를 찾을 수 없습니다.", target)
+                continue
+            for i in range(0, max(len(embeds), 1), 10):
+                await channel.send(
+                    content=content if i == 0 else None, embeds=embeds[i : i + 10]
+                )
 
     # ── 매일 정해진 시각 ────────────────────────────────────
     @tasks.loop(time=RUN_AT)
     async def daily_digest(self) -> None:
-        channel = self.get_channel(CHANNEL_ID)
-        if channel is None:
-            log.error("채널 %s 를 찾을 수 없습니다. DISCORD_CHANNEL_ID 확인 필요", CHANNEL_ID)
-            return
         try:
             fresh, first_run = await self.gather_new()
         except Exception:
@@ -117,12 +133,14 @@ class JobBot(discord.Client):
             return
         if first_run:
             log.info("첫 실행이라 %d건을 조용히 적재했습니다. 내일부터 신규분만 발송합니다.", len(fresh))
-            await channel.send(
-                f"채용공고 봇을 시작했습니다. 기존 공고 {len(fresh)}건을 기준으로 잡아두었고, "
-                f"내일 {RUN_AT.hour:02d}:{RUN_AT.minute:02d}부터 새로 올라온 공고만 알려드립니다."
-            )
+            channel = self.get_channel(CHANNEL_ID)
+            if channel is not None:
+                await channel.send(
+                    f"채용공고 봇을 시작했습니다. 기존 공고 {len(fresh)}건을 기준으로 잡아두었고, "
+                    f"내일 {RUN_AT.hour:02d}:{RUN_AT.minute:02d}부터 새로 올라온 공고만 알려드립니다."
+                )
             return
-        await self.send_digest(channel, fresh)
+        await self.send_digest(fresh)
 
     @daily_digest.before_loop
     async def _wait(self) -> None:
@@ -193,7 +211,7 @@ async def cmd_collect(interaction: discord.Interaction):
         await interaction.followup.send("새로 올라온 공고가 없습니다.")
         return
     await interaction.followup.send(f"새 공고 {len(fresh)}건을 찾았습니다.")
-    await client.send_digest(interaction.channel, fresh)
+    await client.send_digest(fresh, only_channel=interaction.channel)
 
 
 @client.tree.command(name="현황", description="지금까지 모은 공고 통계를 보여줍니다.")

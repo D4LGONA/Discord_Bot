@@ -21,8 +21,7 @@ import yaml
 from dotenv import load_dotenv
 
 from jobbot.collector import collect
-from jobbot.digest import build_embeds, summary_line
-from jobbot.models import CATEGORIES
+from jobbot.digest import plan_messages
 from jobbot.store import SeenFile
 
 logging.basicConfig(
@@ -86,39 +85,32 @@ async def main() -> int:
     fresh = store.filter_new(postings)
     log.info("신규 %d건 / 전체 %d건", len(fresh), len(postings))
 
+    per_cat = int(cfg.get("max_per_section", 25))
     if first_run:
         # 전부 '신규'라 그대로 올리면 채널이 터진다. 기준선만 잡고 맛보기만 보낸다.
-        preview = []
-        for c in CATEGORIES:
-            preview += [p for p in fresh if p.category == c][:SEED_PREVIEW_PER_CATEGORY]
-        content = (
-            f"**채용공고 봇 설정 완료** — 기존 공고 {len(fresh)}건을 기준선으로 저장했습니다.\n"
-            f"{summary_line(fresh)}\n"
-            f"내일부터 매일 오전 6시에 **새로 올라온 공고만** 보내드립니다. "
-            f"아래는 맛보기 {len(preview)}건입니다."
-        )
-        embeds = build_embeds(preview, max_per_section=SEED_PREVIEW_PER_CATEGORY)
-    elif fresh:
-        content = f"**오늘의 신규 채용공고 {len(fresh)}건**\n{summary_line(fresh)}"
-        embeds = build_embeds(fresh, max_per_section=int(cfg.get("max_per_section", 25)))
-    else:
-        content, embeds = "오늘 새로 올라온 공고가 없습니다.", []
+        per_cat = SEED_PREVIEW_PER_CATEGORY
+
+    # 직군별로 각자 채널에 보낸다. 채널이 지정 안 된 직군은 기본 채널로.
+    routed = plan_messages(fresh, cfg, channel_id, per_cat, first_run)
 
     if args.dry_run:
-        print("\n" + content)
-        for e in embeds:
-            print(f"\n── {e.title} ──\n{(e.description or '')[:600]}")
+        for target, content, embeds in routed:
+            print(f"\n===== 채널 {target} =====")
+            print(content or "")
+            for e in embeds:
+                print(f"\n── {e.title} ──\n{(e.description or '')[:500]}")
         log.info("--dry-run 이라 발송하지 않았고 기록도 남기지 않았습니다.")
         return 0
 
     async with httpx.AsyncClient() as client:
-        for i in range(0, max(len(embeds), 1), 10):
-            await post(
-                client, channel_id, token,
-                content=content if i == 0 else None,
-                embeds=embeds[i : i + 10],
-            )
-            await asyncio.sleep(0.5)
+        for target, content, embeds in routed:
+            for i in range(0, max(len(embeds), 1), 10):
+                await post(
+                    client, target, token,
+                    content=content if i == 0 else None,
+                    embeds=embeds[i : i + 10],
+                )
+                await asyncio.sleep(0.5)
 
     store.add(fresh)
     log.info("발송 완료. 기록 %d건으로 갱신", store.total())

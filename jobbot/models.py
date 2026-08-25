@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 # 사용자가 요청한 4개 직군. 표시 순서도 이 순서를 따른다.
-CATEGORIES = ("기획", "모델링", "서버", "클라이언트")
+CATEGORIES = ("기획", "클라이언트", "서버", "아트")
 
 # 경력 구분
 ENTRY = "entry"    # 인턴/신입 지원가능 (요구경력 N년 이하)
