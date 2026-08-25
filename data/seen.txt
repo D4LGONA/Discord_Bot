@@ -1418,6 +1418,8 @@ gamejob|284211|클라이언트
 gamejob|284212|아트
 gamejob|284213|클라이언트
 gamejob|284215|클라이언트
+gamejob|284219|기획
+gamejob|284220|기획
 jobkorea|49454486|모델링
 jobkorea|49454582|기획
 jobkorea|49454618|모델링
@@ -1628,6 +1630,7 @@ jobkorea|49831660|모델링
 jobkorea|49831775|클라이언트
 jobkorea|49833297|클라이언트
 jobkorea|49835668|아트
+jobkorea|49836137|아트
 jobkorea|49837820|클라이언트
 jobkorea|49839037|아트
 jobkorea|49839188|모델링
@@ -1642,7 +1645,9 @@ jobkorea|49844454|모델링
 jobkorea|49844493|모델링
 jobkorea|49844493|아트
 jobkorea|49844888|모델링
+jobkorea|49851521|클라이언트
 jobkorea|49852557|서버
+jobkorea|49852641|클라이언트
 saramin|53090741|모델링
 saramin|53090741|아트
 saramin|53090743|모델링
