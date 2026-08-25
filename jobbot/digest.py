@@ -77,16 +77,24 @@ def build_embeds(
             continue
         emoji, color = CATEGORY_STYLE[category]
 
+        levels = [lv for lv in (ENTRY, SENIOR) if any(p.level == lv for p in items)]
+        # 경력 공고를 안 받는 설정이면 구분이 하나뿐이라 섹션 제목이 군더더기가 된다.
+        show_level_header = len(levels) > 1
+
         blocks: list[str] = []
-        for level in (ENTRY, SENIOR):
+        for level in levels:
             group = sorted((p for p in items if p.level == level), key=_sort_key)
-            if not group:
-                continue
             shown = group[:max_per_section]
-            head = f"**{LEVEL_STYLE[level]} {LEVEL_LABEL[level]} — {len(group)}건**"
-            if len(group) > len(shown):
-                head += f"  _(상위 {len(shown)}건만 표시)_"
-            blocks.append(head + "\n" + "\n".join(_line(p) for p in shown))
+            lines = [_line(p) for p in shown]
+            if show_level_header:
+                head = f"**{LEVEL_STYLE[level]} {LEVEL_LABEL[level]} — {len(group)}건**"
+                if len(group) > len(shown):
+                    head += f"  _(상위 {len(shown)}건만 표시)_"
+                blocks.append(head + "\n" + "\n".join(lines))
+            else:
+                if len(group) > len(shown):
+                    lines.append(f"_… 외 {len(group) - len(shown)}건_")
+                blocks.append("\n".join(lines))
 
         if not blocks:
             continue
@@ -141,6 +149,10 @@ def summary_line(postings: list[Posting]) -> str:
     for c in CATEGORIES:
         n = sum(1 for p in postings if p.category == c)
         parts.append(f"{c} {n}")
-    entry = sum(1 for p in postings if p.level == ENTRY)
+    line = " · ".join(parts)
+    # 경력 공고를 안 받는 설정이면 '경력 0' 을 굳이 보여줄 필요가 없다.
     senior = sum(1 for p in postings if p.level == SENIOR)
-    return f"{' · '.join(parts)}  |  🌱 신입 {entry} · 💼 경력 {senior}"
+    if senior:
+        entry = sum(1 for p in postings if p.level == ENTRY)
+        line += f"  |  🌱 신입 {entry} · 💼 경력 {senior}"
+    return line

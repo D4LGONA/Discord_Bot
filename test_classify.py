@@ -4,7 +4,7 @@
 """
 
 from jobbot.classify import classify_level, parse_career_years
-from jobbot.digest import _safe, build_embeds
+from jobbot.digest import _safe, build_embeds, summary_line
 from jobbot.models import ENTRY, SENIOR, Posting
 from jobbot.relevance import is_relevant
 
@@ -87,6 +87,29 @@ embeds = build_embeds(many, max_per_section=100)
 over = [e for e in embeds if len(e.description or "") > 4096]
 check("임베드 4096자 제한", len(over), 0)
 check("임베드 생성됨", len(embeds) > 0, True)
+
+# 신입만 있으면 구분 제목을 빼고, 섞여 있으면 붙인다
+entry_only = build_embeds(many[:5], max_per_section=25)
+check("신입만: 구분 제목 없음",
+      "인턴 · 신입 지원가능" in (entry_only[0].description or ""), False)
+
+mixed = many[:5] + [
+    Posting(source="gamejob", external_id="s1", category="기획", title="경력 기획자",
+            company="회사", url="https://example.com/s1", career_raw="경력7년↑",
+            career_min=7, level=SENIOR)
+]
+mixed_embeds = build_embeds(mixed, max_per_section=25)
+desc = mixed_embeds[0].description or ""
+check("섞이면: 구분 제목 있음", "인턴 · 신입 지원가능" in desc and "💼" in desc, True)
+
+# 요약 줄: 경력이 없으면 '경력 0' 을 안 보여준다
+check("요약(신입만)", "경력" in summary_line(many[:5]), False)
+check("요약(섞임)", "경력" in summary_line(mixed), True)
+
+# only_entry 필터
+from jobbot.models import SENIOR as _S
+kept = [p for p in mixed if p.level != _S]
+check("경력 제외 필터", len(kept), 5)
 
 # ── 결과 ────────────────────────────────────────────────────
 if fails:

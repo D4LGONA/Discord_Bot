@@ -48,9 +48,10 @@ def _clean(s: str) -> str:
 class GameJob(Source):
     name = "gamejob"
 
-    def __init__(self, delay: float = 0.7, max_pages: int = 30):
+    def __init__(self, delay: float = 0.7, max_pages: int = 30, only_entry: bool = False):
         super().__init__(delay)
         self.max_pages = max_pages
+        self.only_entry = only_entry
 
     async def fetch(self, client: httpx.AsyncClient) -> list[Posting]:
         out: list[Posting] = []
@@ -58,6 +59,16 @@ class GameJob(Source):
             out += await self._fetch_category(client, category, ",".join(codes))
         log.info("[gamejob] %d건 수집", len(out))
         return out
+
+    def _career_params(self) -> dict[str, str]:
+        """경력 공고를 서버에서 미리 걸러 받아올 파라미터.
+
+        career_stat 0=신입, 2=경력무관 / career=1_3 은 1~3년.
+        두 조건은 OR 로 합쳐진다 (신입 17 + 무관 127 + 1~3년 151 = 295 로 확인).
+        """
+        if not self.only_entry:
+            return {}
+        return {"career_stat": "0,2", "career": "1_3"}
 
     async def _fetch_category(self, client, category: str, duty: str) -> list[Posting]:
         headers = {
@@ -69,7 +80,10 @@ class GameJob(Source):
         total = None
         for page in range(1, self.max_pages + 1):
             r = await self._get(
-                client, LIST_URL, params={"Page": page, "duty": duty}, headers=headers
+                client,
+                LIST_URL,
+                params={"Page": page, "duty": duty, **self._career_params()},
+                headers=headers,
             )
             if r is None:
                 break
