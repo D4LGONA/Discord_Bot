@@ -1,38 +1,19 @@
-# ─────────────────────────────────────────────────────────────
-#  게임 개발자 채용공고 봇 설정
-# ─────────────────────────────────────────────────────────────
-
-# 직군별 채널 ID. setup_channels.py 가 채워 준다.
-# 비어 있는 직군은 .env 의 DISCORD_CHANNEL_ID 로 간다.
 channels:
-  기획: null
-  클라이언트: null
-  서버: null
-  아트: null
-
+  기획: 1541444126413693018
+  클라이언트: 1541444086731636856
+  서버: 1541437977027289130
+  아트: 1541444112861892728
 schedule:
-  # 매일 이 시각에 새 공고를 채널로 발송 (24시간제, 한국시간)
   hour: 6
   minute: 0
   timezone: Asia/Seoul
-  # 봇을 처음 켰을 때 기존 공고 전체를 쏟아내지 않고 조용히 DB에만 적재
   seed_on_first_run: true
-
 sources:
-  gamejob:  true    # 게임잡  - 메인. 게임 직군 분류가 정확함
-  wanted:   true    # 원티드  - 공식 JSON API, 연차 정보 정확
-  saramin:  true    # 사람인  - 키워드 검색 기반
-  jobkorea: true    # 잡코리아 - React 렌더링이라 넷 중 가장 깨지기 쉬움. 문제 생기면 false
-
-# 인턴/신입 지원가능으로 분류할 최대 요구경력 (년)
+  gamejob: true
+  wanted: true
+  saramin: true
+  jobkorea: true
 entry_max_years: 3
-
-# true 면 경력 공고를 아예 버린다. 신입/인턴/경력무관/3년이하만 남는다.
-# 게임잡은 서버쪽 필터까지 걸어서 경력 공고는 받아오지도 않는다.
 only_entry: true
-
-# 요청 사이 대기 (초). 너무 낮추면 차단당할 수 있음
 request_delay: 0.7
-
-# 한 번에 채널에 올릴 공고 수 상한 (카테고리·구분당)
 max_per_section: 25
