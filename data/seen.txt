@@ -2046,6 +2046,7 @@ jobkorea|49969891|서버
 jobkorea|49969893|서버
 jobkorea|49973571|클라이언트
 jobkorea|49973967|클라이언트
+jobkorea|49975594|아트
 jobkorea|49976960|아트
 saramin|52842362|클라이언트
 saramin|52943965|아트
