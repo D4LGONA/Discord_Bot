@@ -64,6 +64,7 @@ gamejob|278460|아트
 gamejob|278593|모델링
 gamejob|278593|아트
 gamejob|278593|클라이언트
+gamejob|278731|기획
 gamejob|278782|기획
 gamejob|278833|모델링
 gamejob|278833|클라이언트
@@ -2561,3 +2562,5 @@ saramin|55063076|아트
 saramin|55063964|기획
 saramin|55070368|기획
 saramin|55074558|기획
+saramin|55076181|기획
+saramin|55076181|아트
