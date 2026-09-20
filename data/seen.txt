@@ -1849,6 +1849,7 @@ gamejob|285118|아트
 gamejob|285119|아트
 gamejob|285120|아트
 gamejob|285121|기획
+gamejob|285124|기획
 jobkorea|49454486|모델링
 jobkorea|49454582|기획
 jobkorea|49454618|모델링
