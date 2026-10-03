@@ -1555,6 +1555,10 @@ gamejob|284507|아트
 gamejob|284511|아트
 gamejob|284511|클라이언트
 gamejob|284513|아트
+gamejob|284516|기획
+gamejob|284516|클라이언트
+gamejob|284517|아트
+gamejob|284517|클라이언트
 gamejob|284522|기획
 gamejob|284524|클라이언트
 gamejob|284530|아트
@@ -2871,6 +2875,7 @@ saramin|55173412|아트
 saramin|55173446|기획
 saramin|55174517|기획
 saramin|55184787|기획
+saramin|55190354|기획
 saramin|55191159|서버
 saramin|55191402|클라이언트
 saramin|55192952|기획
