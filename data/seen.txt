@@ -2466,6 +2466,8 @@ jobkorea|50095735|아트
 jobkorea|50098031|클라이언트
 jobkorea|50099586|클라이언트
 jobkorea|50100438|아트
+jobkorea|50105802|아트
+jobkorea|50105941|클라이언트
 saramin|52842285|기획
 saramin|52842362|클라이언트
 saramin|52943965|아트
@@ -2881,3 +2883,15 @@ saramin|55191402|클라이언트
 saramin|55192952|기획
 saramin|55192952|아트
 saramin|55193709|기획
+saramin|55200389|클라이언트
+saramin|55201029|기획
+saramin|55201076|아트
+saramin|55201084|클라이언트
+saramin|55201092|기획
+saramin|55201094|서버
+saramin|55201099|기획
+saramin|55201099|클라이언트
+saramin|55201115|아트
+saramin|55201117|아트
+saramin|55201129|기획
+saramin|55201389|클라이언트
