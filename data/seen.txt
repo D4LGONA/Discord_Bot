@@ -2136,6 +2136,8 @@ gamejob|285730|기획
 gamejob|285732|아트
 gamejob|285732|클라이언트
 gamejob|285738|아트
+gamejob|285741|아트
+gamejob|285742|기획
 jobkorea|49454486|모델링
 jobkorea|49454582|기획
 jobkorea|49454618|모델링
