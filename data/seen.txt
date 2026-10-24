@@ -2917,6 +2917,7 @@ jobkorea|50221555|클라이언트
 jobkorea|50226365|아트
 jobkorea|50226414|아트
 jobkorea|50227875|아트
+jobkorea|50233191|클라이언트
 saramin|52842285|기획
 saramin|52842362|클라이언트
 saramin|52943965|아트
