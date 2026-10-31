@@ -1731,6 +1731,7 @@ gamejob|284830|클라이언트
 gamejob|284831|아트
 gamejob|284836|클라이언트
 gamejob|284837|클라이언트
+gamejob|284841|기획
 gamejob|284842|기획
 gamejob|284844|클라이언트
 gamejob|284845|클라이언트
@@ -2429,6 +2430,7 @@ gamejob|286325|기획
 gamejob|286326|아트
 gamejob|286328|클라이언트
 gamejob|286330|기획
+gamejob|286332|기획
 gamejob|286336|아트
 gamejob|286336|클라이언트
 gamejob|286338|기획
@@ -2453,6 +2455,7 @@ gamejob|286368|기획
 gamejob|286368|아트
 gamejob|286385|기획
 gamejob|286386|아트
+gamejob|286387|기획
 gamejob|286388|아트
 gamejob|286391|아트
 gamejob|286392|아트
@@ -2467,6 +2470,7 @@ gamejob|286422|클라이언트
 gamejob|286430|기획
 gamejob|286434|기획
 gamejob|286434|클라이언트
+gamejob|286436|아트
 gamejob|286437|기획
 gamejob|286439|클라이언트
 gamejob|286440|아트
@@ -2499,6 +2503,20 @@ gamejob|286504|기획
 gamejob|286508|기획
 gamejob|286511|클라이언트
 gamejob|286512|아트
+gamejob|286514|아트
+gamejob|286515|기획
+gamejob|286516|기획
+gamejob|286516|클라이언트
+gamejob|286520|아트
+gamejob|286521|아트
+gamejob|286523|아트
+gamejob|286528|아트
+gamejob|286528|클라이언트
+gamejob|286529|아트
+gamejob|286530|아트
+gamejob|286533|기획
+gamejob|286534|서버
+gamejob|286535|서버
 jobkorea|49454486|모델링
 jobkorea|49454582|기획
 jobkorea|49454618|모델링
@@ -2999,6 +3017,9 @@ jobkorea|50264987|기획
 jobkorea|50267070|클라이언트
 jobkorea|50267886|클라이언트
 jobkorea|50269383|아트
+jobkorea|50271315|아트
+jobkorea|50276508|아트
+jobkorea|50276508|클라이언트
 saramin|52842285|기획
 saramin|52842362|클라이언트
 saramin|52943965|아트
@@ -3031,6 +3052,7 @@ saramin|54378672|서버
 saramin|54378672|클라이언트
 saramin|54384740|모델링
 saramin|54384740|아트
+saramin|54393354|기획
 saramin|54402492|아트
 saramin|54402493|모델링
 saramin|54402493|아트
@@ -3533,3 +3555,13 @@ saramin|55427505|클라이언트
 saramin|55427610|기획
 saramin|55429694|기획
 saramin|55430580|클라이언트
+saramin|55434737|기획
+saramin|55435143|기획
+saramin|55441661|아트
+saramin|55441661|클라이언트
+saramin|55442675|아트
+saramin|55442719|아트
+saramin|55442752|아트
+saramin|55442772|기획
+saramin|55442774|기획
+saramin|55442774|클라이언트
