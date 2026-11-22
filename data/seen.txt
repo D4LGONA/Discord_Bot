@@ -3414,12 +3414,14 @@ jobkorea|50397775|아트
 jobkorea|50397790|클라이언트
 jobkorea|50398182|클라이언트
 jobkorea|50402949|아트
+jobkorea|50402949|클라이언트
 jobkorea|50403485|기획
 jobkorea|50403523|기획
 jobkorea|50403614|기획
 jobkorea|50403709|아트
 jobkorea|50404167|기획
 jobkorea|50407829|아트
+jobkorea|50407901|아트
 saramin|52842285|기획
 saramin|52842362|클라이언트
 saramin|52943965|아트
@@ -4064,3 +4066,4 @@ saramin|55630608|기획
 saramin|55632537|아트
 saramin|55633773|아트
 saramin|55636671|아트
+saramin|55637803|기획
